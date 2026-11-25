@@ -630,11 +630,12 @@
       document.documentElement.setAttribute('data-theme', r);
       document.documentElement.setAttribute('data-theme-mode', mode || this.get());
       var meta = qs('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', r === 'light' ? '#f4f6fb' : '#070b18');
+      if (meta) meta.setAttribute('content', r === 'light' ? '#fefefe' : '#0a1225');
       qsa('[data-theme-toggle]').forEach(function (b) {
         b.setAttribute('aria-pressed', r === 'light' ? 'true' : 'false');
         var t = qs('[data-theme-label]', b);
         if (t) t.textContent = T(r === 'light' ? 'theme.light' : 'theme.dark');
+        if (b.classList.contains('journal-theme-toggle')) b.innerHTML = icon(r === 'light' ? 'moon' : 'sun', 18);
         var use = qs('use', b);
         if (use) use.setAttribute('href', r === 'light' ? '#i-sun' : '#i-moon');
       });
@@ -1002,6 +1003,7 @@
     if (header) {
       var cur = window.PP_I18N ? window.PP_I18N.current().toUpperCase() : 'EN';
       header.innerHTML = [
+        '<div class="journal-topline"><span><b class="journal-signal"></b> ' + esc(CFG.siteName) + '</span><span data-i18n="brand.tagline"></span></div>',
         '<div class="header-inner">',
         '<a class="brand" href="index.html" aria-label="' + esc(CFG.siteName) + '">',
         '<span class="brand-mark"><img src="' + esc(CFG.logo || 'assets/img/logo.png') + '" alt="" width="34" height="34"></span>',
@@ -1016,12 +1018,15 @@
         '</button>',
         '<div class="lang-menu" role="menu"></div>',
         '</div>',
+        '<button class="icon-btn journal-theme-toggle" type="button" data-theme-toggle aria-label="' + esc(T('actions.theme')) + '" title="' + esc(T('actions.theme')) + '">' + icon('sun', 18) + '</button>',
         '<a class="btn btn--primary btn--sm header-write" href="create.html">' + icon('pen', 16) + '<span>' + esc(T('actions.write')) + '</span></a>',
         '<button class="icon-btn nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primaryNav" aria-label="' + esc(T('actions.menu')) + '">' + icon('menu', 20) + '</button>',
         '</div>',
         '</div>'
       ].join('');
 
+      var themeToggle = qs('[data-theme-toggle]', header);
+      if (themeToggle) themeToggle.addEventListener('click', function () { Theme.toggle(); });
       var toggle = qs('[data-nav-toggle]', header);
       if (toggle) toggle.addEventListener('click', function () {
         var open = header.classList.toggle('nav-open');
@@ -1188,46 +1193,29 @@
 
   /* ---------- görünürlük animasyonları ---------- */
   function reveal() {
-    var els = qsa('[data-reveal]:not(.is-revealed)');
-    if (!els.length) return;
-    if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      els.forEach(function (el) { el.classList.add('is-revealed'); });
-      return;
-    }
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        if (en.isIntersecting) {
-          en.target.classList.add('is-revealed');
-          io.unobserve(en.target);
-        }
-      });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
-    els.forEach(function (el, i) {
-      el.style.setProperty('--reveal-delay', (i % 6) * 55 + 'ms');
-      io.observe(el);
-    });
+    qsa('[data-reveal]:not(.is-revealed)').forEach(function (el) { el.classList.add('is-revealed'); });
   }
 
   /* ---------- kart şablonları ---------- */
   function postCard(p, variant) {
     var cat = getCategory(p.category);
     var author = getUser(p.author);
+    var href = 'post.html?slug=' + encodeURIComponent(p.slug);
     return [
-      '<article class="card post-card ' + (variant || '') + '" data-reveal>',
-      '<a class="card-media" href="post.html?slug=' + encodeURIComponent(p.slug) + '" aria-label="' + esc(p.title) + '">',
-      p.cover ? '<img src="' + esc(p.cover) + '" alt="' + esc(p.title) + '" loading="lazy" decoding="async">' : '<span class="card-media__fallback">' + icon('sparkle', 26) + '</span>',
-      '<span class="badge badge--cat">' + esc(cat.name) + '</span>',
-      p.featured ? '<span class="badge badge--feat">' + icon('star', 12) + ' ' + esc(T('home.featuredBadge')) + '</span>' : '',
-      '</a>',
+      '<article class="card post-card ' + (p.cover ? 'has-cover ' : '') + (variant || '') + '" data-reveal>',
       '<div class="card-body">',
-      '<h3 class="card-title"><a href="post.html?slug=' + encodeURIComponent(p.slug) + '">' + esc(p.title) + '</a></h3>',
-      '<p class="card-excerpt">' + esc(truncate(p.excerpt || stripTags(p.content), 120)) + '</p>',
+      '<div class="card-kicker"><a href="category.html?cat=' + encodeURIComponent(p.category) + '">' + esc(cat.name) + '</a>',
+      p.featured ? '<span class="badge badge--feat">' + esc(T('home.featuredBadge')) + '</span>' : '',
+      '</div>',
+      '<h3 class="card-title"><a href="' + href + '">' + esc(p.title) + '</a></h3>',
+      '<p class="card-excerpt">' + esc(truncate(p.excerpt || stripTags(p.content), 180)) + '</p>',
       '<div class="card-meta">',
-      '<span class="meta-item">' + icon('user', 14) + esc(author.name) + '</span>',
-      '<span class="meta-item">' + icon('clock', 14) + esc(formatDate(p.date)) + '</span>',
-      '<span class="meta-item">' + icon('eye', 14) + esc(T('post.readingTime', { n: readingTime(p.content) })) + '</span>',
+      '<span class="meta-item">' + esc(author.name) + '</span>',
+      '<span class="meta-item">' + esc(formatDate(p.date)) + '</span>',
+      '<span class="meta-item">' + esc(T('post.readingTime', { n: readingTime(p.content) })) + '</span>',
       '</div>',
       '</div>',
+      p.cover ? '<a class="card-media" href="' + href + '" aria-label="' + esc(p.title) + '"><img src="' + esc(p.cover) + '" alt="" loading="lazy" decoding="async"></a>' : '',
       '</article>'
     ].join('');
   }
@@ -1235,10 +1223,8 @@
   function postRow(p) {
     var cat = getCategory(p.category);
     return [
-      '<a class="row-card" href="post.html?slug=' + encodeURIComponent(p.slug) + '" data-reveal>',
-      '<span class="row-card__thumb">',
-      p.cover ? '<img src="' + esc(p.cover) + '" alt="" loading="lazy" decoding="async">' : '<span class="row-card__fallback">' + icon('sparkle', 20) + '</span>',
-      '</span>',
+      '<a class="row-card' + (p.cover ? ' has-cover' : '') + '" href="post.html?slug=' + encodeURIComponent(p.slug) + '" data-reveal>',
+      p.cover ? '<span class="row-card__thumb"><img src="' + esc(p.cover) + '" alt="" loading="lazy" decoding="async"></span>' : '',
       '<span class="row-card__body">',
       '<span class="row-card__title">' + esc(p.title) + '</span>',
       '<span class="row-card__excerpt">' + esc(truncate(p.excerpt || stripTags(p.content), 110)) + '</span>',
@@ -1276,6 +1262,23 @@
     }
   }
 
+  function mountJournalProgress() {
+    if (document.body.getAttribute('data-page') !== 'post' || qs('.journal-progress')) return;
+    var bar = document.createElement('div');
+    bar.className = 'journal-progress';
+    bar.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(bar);
+    function update() {
+      var root = document.documentElement;
+      var max = root.scrollHeight - root.clientHeight;
+      var progress = max > 0 ? Math.max(0, Math.min(1, window.scrollY / max)) : 0;
+      bar.style.transform = 'scaleX(' + progress + ')';
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  }
+
   /* ---------- sayfa iskeleti ---------- */
   async function init() {
     Theme.init();
@@ -1284,6 +1287,7 @@
     mountChrome();
     mountSearch();
     mountRuntime();
+    mountJournalProgress();
 
     /* Dil her değiştiğinde iskelet (menü, arama, altbilgi) anında yenilenir.
      * Sayfa içerikleri kendi 'preportal:lang' dinleyicileriyle çizilir. */

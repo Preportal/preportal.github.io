@@ -1,13 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
-  <defs>
-    <linearGradient id="pp-blue" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#5b8dff"/>
-      <stop offset="1" stop-color="#2f6bff"/>
-    </linearGradient>
-  </defs>
-  <rect width="256" height="256" rx="56" fill="#0a1020"/>
-  <!-- beyaz dış geometrik çerçeve (P silüeti) -->
-  <path d="M128 44 190 80v46c0 7-7 11-12 8l-12-7c-4-2-6-6-6-11V98l-32-18-32 18v62c0 7-7 11-12 8l-12-7c-4-2-6-6-6-11V80Z" fill="#ffffff"/>
-  <!-- mavi iç P -->
-  <path d="M112 108h36c11 0 20 9 20 20v14c0 11-9 20-20 20h-12v18c0 7-7 11-12 8l-12-7c-4-2-6-6-6-11Zm24 20v14h12v-14Z" fill="url(#pp-blue)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <rect width="400" height="400" fill="#0A1225"/>
+  <path fill="#FEFEFE" d="M62.5 311V156C62.5 140 70 129 83 122L181 70C194 63 203 63 216 70L318 122C333 130 341 143 341 159V243C341 259 333 270 320 278L284 297L257 283L285 268C294 263 299 254 299 244V170C299 162 295 157 287 153L215 116C205 111 197 111 187 116L114 153C106 157 102.5 163 102.5 172V289Z"/>
+  <path fill="#3C80FD" d="M168 352L128.5 330V198C128.5 186 133 178 144 172L187 149C196 144 204 144 213 149L257 171C267 177 272 184 272 196V227C272 238 267 246 257 252L198.5 283V237L226 221C230 219 233 216 233 211V202C233 197 230 194 226 192L216 187C212 185 209 185 205 187L174 204C170 206 168 210 168 215Z"/>
 </svg>

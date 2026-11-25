@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PrePortal — Apps, games and software archive</title>
   <meta name="description" content="PrePortal — APK, game and software reviews, guides and release notes.">
-  <meta name="theme-color" content="#070b18">
+  <meta name="theme-color" content="#0a1225">
+  <link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
   <link rel="icon" href="assets/img/favicon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <meta property="og:type" content="website">
@@ -13,7 +14,7 @@
   <meta property="og:title" content="PrePortal — Apps, games and software archive">
   <meta property="og:description" content="APK, game and software reviews, guides and release notes.">
   <meta property="og:image" content="assets/img/logo-256.png">
-  <link rel="stylesheet" href="assets/css/theme.css"?v=1>
+  <link rel="stylesheet" href="assets/css/theme.css?v=3">
   <script>
     /* theme is applied before first paint (no flash) */
     (function () {
@@ -32,6 +33,43 @@
   <div class="container"><div class="ad-slot" data-ad="header" hidden></div></div>
 
   <main>
+    <section class="journal-hero container">
+      <div class="journal-hero__copy">
+        <p class="journal-kicker" data-i18n="home.eyebrow">Reviews · Guides · Release notes</p>
+        <h1 data-i18n="home.title">Apps &amp; games, all in one place</h1>
+        <p class="journal-hero__lead" data-i18n="home.lead">Reviews, guides and release notes.</p>
+        <div class="journal-hero__actions">
+          <a class="btn btn--primary" href="#latest" data-i18n="home.ctaExplore">Browse the catalog</a>
+          <a class="journal-text-link" href="about.html" data-i18n="footer.about">About</a>
+        </div>
+      </div>
+      <div class="journal-hero__art" aria-hidden="true">
+        <svg class="journal-fragments" viewBox="0 0 600 420" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <g fill="#3C80FD">
+            <path opacity=".14" d="M0 0H260L0 260Z"/>
+            <path opacity=".38" d="M0 56 165 0H255L70 180Z"/>
+            <path opacity=".8" d="M0 180 70 180 0 295Z"/>
+            <path opacity=".17" d="M600 45 420 205 600 260Z"/>
+            <path opacity=".55" d="M600 180 440 310 600 345Z"/>
+            <path opacity=".95" d="M470 420 600 285V420Z"/>
+            <path opacity=".23" d="M205 420 350 310 420 420Z"/>
+          </g>
+          <g fill="none" stroke="#FEFEFE" stroke-opacity=".16">
+            <path d="M0 56 255 0 70 180 0 295M420 205 600 45M350 310 600 345M205 420 600 180"/>
+            <path d="M300 0V420M0 210H600" stroke-dasharray="3 9"/>
+            <path d="M300 30 455 120V300L300 390 145 300V120Z"/>
+            <path d="M300 48 439 129V291L300 372 161 291V129Z"/>
+          </g>
+        </svg>
+        <img class="journal-emblem" src="assets/img/logo.svg" alt="" width="240" height="240">
+        <span class="journal-art-label">PREPORTAL / 001</span>
+      </div>
+      <div class="journal-hero__foot">
+        <span data-i18n="brand.tagline">Apps, games &amp; software archive</span>
+        <a href="#latest"><span data-i18n="home.latestTitle">Latest additions</span> ↓</a>
+      </div>
+    </section>
+
     <!-- CATALOG TOOLBAR -->
     <section class="catalog-top">
       <div class="container catalog-top__inner">
@@ -67,15 +105,17 @@
     </section>
 
     <!-- CATALOG GRID -->
-    <section class="section catalog-section">
-      <div class="container">
+    <section class="section catalog-section" id="latest">
+      <div class="container journal-columns">
+        <div class="journal-feed">
         <div class="catalog-head">
           <div>
-            <h1 id="homeTitle" class="catalog-head__title">Latest posts</h1>
+            <h2 id="homeTitle" class="catalog-head__title">Latest posts</h2>
             <p id="homeSub" class="catalog-head__sub">Newest reviews, guides and release notes.</p>
           </div>
           <span class="catalog-head__count" id="homeCount" aria-live="polite"></span>
         </div>
+
         <div class="grid grid--posts" id="homePosts" aria-live="polite">
           <div class="skeleton" style="height:290px"></div>
           <div class="skeleton" style="height:290px"></div>
@@ -83,35 +123,41 @@
           <div class="skeleton" style="height:290px"></div>
         </div>
         <div id="homePager" class="catalog-pager"></div>
+        </div>
+        <aside class="journal-sidebar" aria-label="PrePortal">
+          <section class="journal-about">
+            <p class="journal-kicker" data-i18n="footer.about">About</p>
+            <h2>PrePortal</h2>
+            <p data-i18n="home.latestSub"></p>
+            <a class="journal-text-link" href="about.html" data-i18n="footer.about">About</a>
+          </section>
+          <section class="journal-side-panel">
+            <span class="eyebrow" data-i18n="categories.eyebrow"></span><h2 data-i18n="home.categoriesTitle"></h2>
+            <div class="grid" id="homeCategories"></div>
+            <a class="journal-text-link" href="category.html" data-i18n="nav.categories"></a>
+          </section>
+          <section class="journal-side-panel">
+            <h2 data-i18n="home.latestTitle"></h2>
+            <div id="journalRecent"></div>
+            <a class="journal-text-link" href="blog.html" data-i18n="actions.seeAll"></a>
+          </section>
+        </aside>
       </div>
     </section>
 
-    <!-- CATEGORY STRIP -->
-    <section class="section section--tight">
-      <div class="container">
-        <div class="section-head">
-          <div>
-            <span class="eyebrow" data-i18n="categories.eyebrow"></span>
-            <h2 data-i18n="home.categoriesTitle"></h2>
-          </div>
-          <a class="btn btn--ghost btn--sm" href="category.html" data-i18n="nav.categories"></a>
-        </div>
-        <div class="grid grid--3" id="homeCategories"></div>
-      </div>
-    </section>
   </main>
 
   <div class="container"><div class="ad-slot" data-ad="footer" hidden></div></div>
 
   <footer class="site-footer" data-footer></footer>
 
-  <script src="data/config.js?v=1"></script>
+  <script src="data/config.js?v=2"></script>
   <script src="assets/js/cache-bust.js?v=1"></script>
   <script src="data/runtime.js?v=1"></script>
   <script src="assets/js/i18n.js?v=1"></script>
   <script src="assets/js/engine.js?v=5"></script>
-  <script src="assets/js/core.js?v=1"></script>
-  <script src="assets/js/home.js?v=1"></script>
+  <script src="assets/js/core.js?v=3"></script>
+  <script src="assets/js/home.js?v=2"></script>
   <script>
     window.PrePortal.ready();
   </script>
