@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Games — PrePortal</title>
+  <meta name="description" content="Game reviews, mods and release notes.">
+  <meta name="theme-color" content="#070b18">
+  <link rel="icon" href="assets/img/favicon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="PrePortal">
+  <meta property="og:title" content="Games — PrePortal">
+  <meta property="og:description" content="Game reviews, mods and release notes.">
+  <meta property="og:image" content="assets/img/logo-256.png">
+  <link rel="stylesheet" href="assets/css/theme.css"?v=1>
+  <script>
+    (function () {
+      try {
+        var m = localStorage.getItem('preportal:theme') || 'dark';
+        var r = m === 'system' ? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark') : m;
+        document.documentElement.setAttribute('data-theme', r === 'light' ? 'light' : 'dark');
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body data-page="games">
+
+  <header class="site-header" data-header></header>
+
+  <div class="container"><div class="ad-slot" data-ad="header" hidden></div></div>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <span class="eyebrow" data-i18n="catalog.gamesEyebrow"></span>
+        <h1 data-i18n="catalog.gamesTitle"></h1>
+        <p data-i18n="catalog.gamesLead"></p>
+      </div>
+    </section>
+    <section class="section" style="padding-top:16px">
+      <div class="container">
+        <div class="grid grid--posts" id="archiveGrid" data-fixed-cat="games"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="container"><div class="ad-slot" data-ad="footer" hidden></div></div>
+
+  <footer class="site-footer" data-footer></footer>
+
+  <script src="data/config.js?v=1"></script>
+  <script src="assets/js/cache-bust.js?v=1"></script>
+  <script src="data/runtime.js?v=1"></script>
+  <script src="assets/js/i18n.js?v=1"></script>
+  <script src="assets/js/engine.js?v=5"></script>
+  <script src="assets/js/core.js?v=1"></script>
+  <script src="assets/js/archive.js?v=1"></script>
+  <script>
+    window.PrePortal.ready();
+  </script>
+</body>
+</html>

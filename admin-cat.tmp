@@ -1,0 +1,254 @@
+  /* ---------------------------------------------------------- categories */
+  function renderCategories(host) {
+    var catDir = P.CFG.categoryDir || 'category';
+    var langs = (P.CFG.langs && P.CFG.langs.length) ? P.CFG.langs.slice() : ['en'];
+    var defaultLang = P.CFG.defaultLang || langs[0] || 'en';
+    if (langs.indexOf(defaultLang) === -1) langs.unshift(defaultLang);
+    var langNames = { en: 'English', tr: 'Türkçe', ru: 'Русский' };
+
+    var editing = '';
+    var slugTouched = false;
+    var activeLang = defaultLang;
+    var langState = {};
+    langs.forEach(function (l) { langState[l] = { name: '', description: '' }; });
+
+    host.innerHTML = [
+      '<div class="admin-grid-2">',
+
+      '<div class="panel"><div class="panel-head"><h4 id="catFormTitle">' + P.esc(T('admin.catCreate')) + '</h4>' +
+      '<button class="btn btn--ghost btn--sm" type="button" id="catReset">' + P.esc(T('admin.reset')) + '</button></div>',
+
+      '<div class="admin-form">',
+      row('catSlug', 'admin.catSlug', 'text', 'antivirus', 'mono'),
+      '<span class="hint" style="margin-top:-6px">' + P.esc(T('admin.catSlugHint')) + '</span>',
+
+      '<div class="form-row"><label class="label" for="catParent">' + P.esc(T('admin.catParent')) + '</label>' +
+      '<div class="select-wrap"><select class="select" id="catParent"></select></div>' +
+      '<span class="hint">' + P.esc(T('admin.catParentHint')) + '</span></div>',
+
+      '<div class="cat-lang">',
+      '<div class="tabs" id="catLangTabs" role="tablist"></div>',
+      '<div id="catLangFields"></div>',
+      '<span class="hint">' + P.esc(T('admin.catLangHint')) + '</span>',
+      '</div>',
+
+      '<div class="admin-grid-2 admin-grid-2--tight">',
+      row('catIcon', 'admin.catIcon', 'text', 'folder'),
+      row('catOrder', 'admin.catOrder', 'number', '0'),
+      '</div>',
+      row('catKeywords', 'admin.keywords', 'textarea', ''),
+      '<span class="hint">' + P.esc(T('studio.fKeywordsHint')) + '</span>',
+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">',
+      '<button class="btn btn--primary btn--sm" type="button" id="catCreate">' + P.esc(T('admin.catCreate')) + '</button>',
+      '<button class="btn btn--soft btn--sm" type="button" id="catDownload">' + P.esc(T('admin.download')) + '</button>',
+      '<button class="btn btn--ghost btn--sm" type="button" id="catCopy">' + P.esc(T('admin.copy')) + '</button>',
+      '</div>',
+
+      '<div class="form-row"><span class="label" id="catScriptName">' + P.esc(T('admin.catScript')) + '</span>' +
+      '<pre class="code-box" id="catPreview"></pre></div>',
+      '</div></div>',
+
+      '<div class="panel"><div class="panel-head"><h4>' + P.esc(T('admin.catPreview')) + '</h4></div>',
+      '<div class="admin-tree" id="catTree"></div>',
+      '<h4 style="margin:18px 0 8px;font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-3)">' + P.esc(T('admin.catExisting')) + '</h4>',
+      '<div class="draft-list" id="catList"></div></div>',
+      '</div>'
+    ].join('');
+
+    /* ---------- dil sekmeleri ---------- */
+    function langLabel(code) { return langNames[code] || String(code).toUpperCase(); }
+
+    function renderLangTabs() {
+      P.qs('#catLangTabs').innerHTML = langs.map(function (l) {
+        return '<button class="tab' + (l === activeLang ? ' is-active' : '') + '" type="button" role="tab" aria-selected="' +
+          (l === activeLang ? 'true' : 'false') + '" data-cat-lang="' + P.esc(l) + '">' +
+          '<span>' + P.esc(langLabel(l)) + '</span>' +
+          (l === defaultLang ? '<small class="muted">' + P.esc(T('admin.catLangDefault')) + '</small>' : '') +
+          '</button>';
+      }).join('');
+    }
+
+    function renderLangFields() {
+      var state = langState[activeLang] || { name: '', description: '' };
+      P.qs('#catLangFields').innerHTML =
+        '<div class="form-row"><label class="label" for="catName">' + P.esc(T('admin.catName')) + ' · ' + P.esc(activeLang.toUpperCase()) + '</label>' +
+        '<input class="input" id="catName" type="text" autocomplete="off" value="' + P.esc(state.name) + '" placeholder="' + P.esc(T('admin.catName')) + '"></div>' +
+        '<div class="form-row"><label class="label" for="catDesc">' + P.esc(T('admin.catDesc')) + ' · ' + P.esc(activeLang.toUpperCase()) + '</label>' +
+        '<textarea class="textarea input" id="catDesc" rows="2">' + P.esc(state.description) + '</textarea></div>';
+
+      P.qs('#catName').addEventListener('input', function (e) {
+        state.name = e.target.value;
+        if (!slugTouched && activeLang === defaultLang) P.qs('#catSlug').value = P.slugify(state.name);
+        updatePreview();
+      });
+      P.qs('#catDesc').addEventListener('input', function (e) {
+        state.description = e.target.value;
+        updatePreview();
+      });
+    }
+
+    P.qs('#catLangTabs').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-cat-lang]');
+      if (!b) return;
+      activeLang = b.getAttribute('data-cat-lang');
+      renderLangTabs();
+      renderLangFields();
+    });
+
+    /* ---------- üst kategori seçenekleri (kendisi ve alt dalları hariç) ---------- */
+    function parentOptions() {
+      var blocked = editing ? P.descendantSlugs(editing) : [];
+      var out = ['<option value="">' + P.esc(T('admin.parentNone')) + '</option>'];
+      (function walk(list, depth) {
+        list.forEach(function (c) {
+          if (blocked.indexOf(c.slug) !== -1) return;
+          out.push('<option value="' + P.esc(c.slug) + '">' + P.esc((depth ? '— '.repeat(depth) : '') + c.name) + '</option>');
+          walk(c.children || [], depth + 1);
+        });
+      })(P.categoryTree(), 0);
+      return out.join('');
+    }
+
+    /* ---------- mevcut kategori ağacı + listesi ---------- */
+    function paintTree() {
+      var rows = [];
+      (function walk(list, depth) {
+        list.forEach(function (c) {
+          rows.push('<div class="admin-tree__item' + (depth ? ' is-child' : '') + '">' +
+            P.icon(c.icon || 'folder', depth ? 14 : 15) +
+            '<b>' + P.esc(c.name) + '</b>' +
+            '<small>' + P.esc(c.slug) + ' · ' + c.count + '</small></div>');
+          walk(c.children || [], depth + 1);
+        });
+      })(P.categoryTree(), 0);
+      P.qs('#catTree').innerHTML = rows.length ? rows.join('') :
+        '<span class="muted" style="font-size:.84rem">' + P.esc(T('home.noCategories')) + '</span>';
+
+      var flat = [];
+      (function walk(list, depth) {
+        list.forEach(function (c) {
+          flat.push({ cat: c, depth: depth });
+          walk(c.children || [], depth + 1);
+        });
+      })(P.categoryTree(), 0);
+
+      P.qs('#catList').innerHTML = flat.length ? flat.map(function (item) {
+        var c = item.cat;
+        return '<div class="draft-item"><span style="flex:1;min-width:0;padding-left:' + (item.depth * 14) + 'px">' +
+          '<b>' + P.esc(c.name) + '</b><br><small class="muted">' +
+          P.esc(catDir + '/' + c.slug + '.js') + (c.parent ? ' · ' + P.esc(c.parent) : '') + ' · ' + c.count + '</small></span>' +
+          (c.children && c.children.length ? '<span class="badge-soft">' + c.children.length + ' ' + P.esc(T('admin.catChildren')) + '</span>' : '') +
+          '<button class="icon-btn" type="button" data-edit-cat="' + P.esc(c.slug) + '" title="' + P.esc(T('admin.edit')) + '">' + P.icon('pen', 15) + '</button></div>';
+      }).join('') : '<span class="muted" style="font-size:.84rem">—</span>';
+    }
+
+    /* ---------- form değerleri ---------- */
+    function collectCat() {
+      var base = langState[defaultLang] || { name: '', description: '' };
+      var names = {}, descs = {};
+      langs.forEach(function (l) {
+        if (l === defaultLang) return;
+        if ((langState[l].name || '').trim()) names[l] = langState[l].name.trim();
+        if ((langState[l].description || '').trim()) descs[l] = langState[l].description.trim();
+      });
+      return {
+        slug: P.slugify(P.qs('#catSlug').value || base.name),
+        name: (base.name || '').trim(),
+        description: (base.description || '').trim(),
+        parent: P.qs('#catParent').value || '',
+        icon: P.qs('#catIcon').value.trim() || 'folder',
+        order: parseInt(P.qs('#catOrder').value, 10) || 0,
+        keywords: P.qs('#catKeywords').value.split(/[,\n]/).map(function (k) { return k.trim(); }).filter(Boolean),
+        names: names,
+        descriptions: descs
+      };
+    }
+
+    function updatePreview() {
+      var c = collectCat();
+      P.qs('#catScriptName').textContent = catDir + '/' + (c.slug || 'slug') + '.js';
+      P.qs('#catPreview').innerHTML = P.publish.highlight(P.publish.buildCategoryFile(c));
+    }
+
+    function validate(c) {
+      if (!c.name) { P.toast(T('admin.catNameRequired'), 'error'); return false; }
+      if (!P.qs('#catSlug').value.trim()) { P.toast(T('admin.catSlug'), 'error'); return false; }
+      if (P.Store.categories[c.slug] && c.slug !== editing) {
+        P.toast(T('admin.catSlugTaken', { slug: c.slug }), 'error');
+        return false;
+      }
+      if (c.parent && P.descendantSlugs(c.slug).indexOf(c.parent) !== -1) {
+        P.toast(T('admin.catCycle'), 'error');
+        return false;
+      }
+      return true;
+    }
+
+    /* ---------- dil dosyasındaki mevcut çeviri (düzenlemede ön doldurma) ---------- */
+    function dictCat(slug, lang, field) {
+      if (!window.PP_I18N || typeof window.PP_I18N.dict !== 'function') return '';
+      if (lang !== window.PP_I18N.current()) return '';
+      var d = window.PP_I18N.dict();
+      var e = d && d.categoryNames ? d.categoryNames[slug] : null;
+      return (e && e[field]) ? e[field] : '';
+    }
+
+    function fillForm(cat) {
+      editing = cat ? cat.slug : '';
+      activeLang = defaultLang;
+      slugTouched = !!cat;
+      langs.forEach(function (l) {
+        var nm = cat ? ((cat.names && cat.names[l]) || (l === defaultLang ? cat.name : '') || dictCat(cat.slug, l, 'name') || '') : '';
+        var ds = cat ? ((cat.descriptions && cat.descriptions[l]) || (l === defaultLang ? cat.description : '') || dictCat(cat.slug, l, 'description') || '') : '';
+        langState[l] = { name: nm, description: ds };
+      });
+      P.qs('#catSlug').value = cat ? (cat.slug || '') : '';
+      P.qs('#catParent').innerHTML = parentOptions();
+      P.qs('#catParent').value = (cat && cat.parent) ? cat.parent : '';
+      P.qs('#catIcon').value = cat ? (cat.icon || 'folder') : 'folder';
+      P.qs('#catOrder').value = cat ? (cat.order || 0) : 0;
+      P.qs('#catKeywords').value = cat ? (cat.keywords || []).join(', ') : '';
+      P.qs('#catFormTitle').textContent = T(cat ? 'admin.catUpdate' : 'admin.catCreate');
+      renderLangTabs();
+      renderLangFields();
+      updatePreview();
+    }
+
+    /* ---------- olaylar ---------- */
+    P.qs('#catSlug').addEventListener('input', function () { slugTouched = true; updatePreview(); });
+    ['catParent', 'catIcon', 'catOrder', 'catKeywords'].forEach(function (id) {
+      var el = P.qs('#' + id);
+      el.addEventListener('input', updatePreview);
+      el.addEventListener('change', updatePreview);
+    });
+
+    P.qs('#catCreate').addEventListener('click', function () {
+      var c = collectCat();
+      if (!validate(c)) return;
+      P.download(c.slug + '.js', P.publish.buildCategoryFile(c));
+      P.toast(T('admin.downloaded', { file: catDir + '/' + c.slug + '.js' }), 'success');
+    });
+    P.qs('#catDownload').addEventListener('click', function () {
+      var c = collectCat();
+      if (!validate(c)) return;
+      P.download(c.slug + '.js', P.publish.buildCategoryFile(c));
+    });
+    P.qs('#catCopy').addEventListener('click', async function () {
+      var ok = await P.copyText(P.publish.buildCategoryFile(collectCat()));
+      P.toast(ok ? T('admin.copy') : T('admin.copyFailed'), ok ? 'success' : 'error');
+    });
+    P.qs('#catReset').addEventListener('click', function () { renderCategories(host); });
+
+    P.qs('#catList').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-edit-cat]');
+      if (!b) return;
+      var cat = P.Store.categories[b.getAttribute('data-edit-cat')];
+      if (!cat) return;
+      fillForm(cat);
+    });
+
+    /* başlangıç */
+    fillForm(null);
+    paintTree();
+  }
