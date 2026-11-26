@@ -16,7 +16,7 @@ window.PREPORTAL_CONFIG = {
   siteName: 'PrePortal',
   siteUrl: 'https://preportal.github.io/', // GitHub Pages adresiniz (sonunda / olsun)
   description: 'PrePortal — APK, oyun ve yazılım incelemeleri, rehberler ve güncelleme notları.',
-  logo: 'assets/img/logo.svg',
+  logo: 'assets/img/logo.png',
 
   /* Diller: lang/<code>.json · ilk sıradaki yedek dil (fallback) olur */
   langs: ['en', 'tr', 'ru'],
@@ -82,8 +82,8 @@ window.PREPORTAL_CONFIG = {
 
   /* Tema */
   theme: {
-    accent: '#3c80fd',
-    accent2: '#91b8ff',
+    accent: '#2f6bff',
+    accent2: '#22d3ee',
     defaultMode: 'dark'       // 'dark' | 'light' | 'system'
   }
 };

@@ -29,7 +29,6 @@
     paintHead();
     buildTabs(cats);
     buildCategories(cats);
-    buildRecent();
     wire();
     render();
 
@@ -40,7 +39,6 @@
       paintHead();
       buildTabs(cats);
       buildCategories(cats);
-    buildRecent();
       wire();
       render();
     };
@@ -55,7 +53,8 @@
           '<span>' + P.esc(c.name) + '</span><small>' + P.num(c.count) + '</small></a>';
       }).join('');
 
-      setActive(state.cat);
+      var pre = P.param('cat') || '';
+      if (pre) setActive(pre);
       /* tek dinleyici (yeniden çizimde çoğalmasın) */
       if (host.dataset.bound === '1') return;
       host.dataset.bound = '1';
@@ -95,15 +94,6 @@
       }).join('') : P.emptyState(T('home.noCategories'), T('home.noCategoriesText'));
     }
 
-    function buildRecent() {
-      var host = P.qs('#journalRecent');
-      if (!host) return;
-      host.innerHTML = sortList(posts, 'new').slice(0, 4).map(function (p) {
-        return '<a class="journal-recent" href="post.html?slug=' + encodeURIComponent(p.slug) + '">' +
-          '<small>' + P.esc(P.formatDate(p.date)) + '</small><strong>' + P.esc(p.title) + '</strong></a>';
-      }).join('');
-    }
-
     /* ---------- controls ---------- */
     function wire() {
       if (wire.done) return;
@@ -139,7 +129,7 @@
       var slice = list.slice((state.page - 1) * per, state.page * per);
 
       grid.innerHTML = slice.length
-        ? slice.map(function (p, i) { return P.postCard(p, i === 0 && state.page === 1 && !state.q && !state.cat && state.sort === 'new' ? 'journal-lead' : ''); }).join('')
+        ? slice.map(function (p) { return P.postCard(p); }).join('')
         : P.emptyState(T('catalog.emptyTitle'), T('catalog.emptyText'),
           '<a class="btn btn--soft" href="index.html">' + P.esc(T('catalog.emptyAction')) + '</a>');
 
@@ -150,7 +140,7 @@
           b.addEventListener('click', function () {
             state.page = Number(b.getAttribute('data-page'));
             render();
-            var top = P.qs('#latest');
+            var top = P.qs('.catalog-top');
             if (top) window.scrollTo({ top: Math.max(0, top.offsetTop - 70), behavior: 'smooth' });
           });
         });
@@ -172,7 +162,7 @@
       if (state.cat) u.set('cat', state.cat);
       if (state.sort && state.sort !== 'new') u.set('sort', state.sort);
       var s = u.toString();
-      try { history.replaceState(null, '', (s ? '?' + s : location.pathname) + location.hash); } catch (e) { }
+      try { history.replaceState(null, '', s ? '?' + s : location.pathname); } catch (e) { }
     }
   });
 
