@@ -1,6 +1,0 @@
-
-# yerel test artefaktları
-node_modules/
-.shot*.cjs
-.check.cjs
-shot-*.png
