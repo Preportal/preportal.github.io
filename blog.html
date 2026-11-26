@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>All posts — PrePortal</title>
+  <meta name="description" content="Every post in the PrePortal archive: reviews, guides and release notes.">
+  <meta name="theme-color" content="#070b18">
+  <link rel="icon" href="assets/img/favicon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="PrePortal">
+  <meta property="og:title" content="All posts — PrePortal">
+  <meta property="og:description" content="Every post in the PrePortal archive: reviews, guides and release notes.">
+  <meta property="og:image" content="assets/img/logo-256.png">
+  <link rel="stylesheet" href="assets/css/theme.css"?v=1>
+  <script>
+    (function () {
+      try {
+        var m = localStorage.getItem('preportal:theme') || 'dark';
+        var r = m === 'system' ? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark') : m;
+        document.documentElement.setAttribute('data-theme', r === 'light' ? 'light' : 'dark');
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body data-page="blog">
+
+  <header class="site-header" data-header></header>
+
+  <div class="container"><div class="ad-slot" data-ad="header" hidden></div></div>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <span class="eyebrow" data-i18n="blog.eyebrow"></span>
+        <h1 data-i18n="blog.title"></h1>
+        <p data-i18n="blog.lead"></p>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:22px">
+      <div class="container">
+        <div class="toolbar">
+          <label class="field">
+            <span class="sr-only" data-i18n="actions.search"></span>
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input class="input" type="search" id="archiveSearch" autocomplete="off" data-i18n-attr="placeholder:catalog.searchPlaceholder">
+          </label>
+          <div class="select-wrap">
+            <label class="sr-only" for="archiveCat" data-i18n="studio.fCategory"></label>
+            <select class="select" id="archiveCat"></select>
+          </div>
+          <div class="select-wrap">
+            <label class="sr-only" for="archiveSort" data-i18n="catalog.sortNew"></label>
+            <select class="select" id="archiveSort">
+              <option value="new" data-i18n="catalog.sortNew"></option>
+              <option value="old" data-i18n="catalog.sortOld"></option>
+              <option value="az" data-i18n="catalog.sortAz"></option>
+              <option value="za" data-i18n="catalog.sortZa"></option>
+              <option value="read" data-i18n="catalog.sortRead"></option>
+            </select>
+          </div>
+          <button class="btn btn--ghost btn--sm" type="button" id="archiveReset" data-i18n="blog.reset"></button>
+        </div>
+
+        <div class="chips" id="archiveTags" style="margin-bottom:22px"></div>
+
+        <div class="grid grid--posts" id="archiveGrid" aria-live="polite"></div>
+        <div id="archivePager" style="margin-top:32px"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="container"><div class="ad-slot" data-ad="footer" hidden></div></div>
+
+  <footer class="site-footer" data-footer></footer>
+
+  <script src="data/config.js?v=1"></script>
+  <script src="assets/js/cache-bust.js?v=1"></script>
+  <script src="data/runtime.js?v=1"></script>
+  <script src="assets/js/i18n.js?v=1"></script>
+  <script src="assets/js/engine.js?v=5"></script>
+  <script src="assets/js/core.js?v=1"></script>
+  <script src="assets/js/archive.js?v=1"></script>
+  <script>
+    window.PrePortal.ready();
+  </script>
+</body>
+</html>

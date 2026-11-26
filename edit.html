@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edit — PrePortal</title>
+  <meta name="description" content="PrePortal edit tool: load an existing post, change it, and download the updated file.">
+  <meta name="theme-color" content="#070b18">
+  <link rel="icon" href="assets/img/favicon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="vendor/ckeditor5/ckeditor5.css">
+  <link rel="stylesheet" href="assets/css/theme.css"?v=1>
+  <script>
+    (function () {
+      try {
+        var m = localStorage.getItem('preportal:theme') || 'dark';
+        var r = m === 'system' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : m;
+        document.documentElement.setAttribute('data-theme', r === 'light' ? 'light' : 'dark');
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body data-page="edit">
+
+  <header class="site-header" data-header></header>
+
+  <main class="studio" style="padding-top:0">
+    <section class="section section--tight" style="padding-top:22px;padding-bottom:10px">
+      <div class="container">
+        <div class="section-head" id="editHead">
+          <div>
+            <span class="eyebrow" data-i18n="admin.navPosts"></span>
+            <h1 data-i18n="studio.modeEdit"></h1>
+            <p class="muted" data-i18n="studio.editUnsaved"></p>
+          </div>
+          <a class="btn btn--ghost btn--sm" href="admin.html#posts"><span data-i18n="actions.back"></span></a>
+        </div>
+
+        <div class="panel" id="pickerPanel">
+          <h4 data-i18n="studio.pickPost"></h4>
+          <div class="admin-toolbar" style="margin-top:10px">
+            <label class="field">
+              <span data-i18n="actions.search"></span>
+              <input class="input" type="search" id="pickSearch" autocomplete="off">
+            </label>
+          </div>
+          <div class="draft-list" id="pickList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--tight" id="studioSection" hidden style="padding-top:0">
+      <div class="container">
+        <div id="editorRoot"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" data-footer></footer>
+
+  <script src="data/config.js?v=1"></script>
+  <script src="assets/js/cache-bust.js?v=1"></script>
+  <script src="data/runtime.js?v=1"></script>
+  <script src="assets/js/i18n.js?v=1"></script>
+  <script src="assets/js/engine.js?v=5"></script>
+  <script src="assets/js/core.js?v=1"></script>
+  <script src="assets/js/publisher.js?v=1"></script>
+  <script src="vendor/ckeditor5/translations/tr.umd.js"></script>
+  <script src="vendor/ckeditor5/translations/i18n-extra.js"></script>
+  <script src="vendor/ckeditor5/ckeditor5.umd.js"></script>
+  <script src="assets/js/create.js?v=1"></script>
+  <script src="assets/js/edit.js?v=1"></script>
+  <script>
+    window.PrePortal.ready();
+  </script>
+</body>
+</html>
