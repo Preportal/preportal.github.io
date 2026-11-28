@@ -1,0 +1,13 @@
+
+# yerel test artefaktları
+node_modules/
+.shot*.cjs
+.check.cjs
+shot-*.png
+
+# ajan/yedek klasörleri (repoya gitmez)
+.abacusai-bot/
+.backup-icons-2026/
+*.bak
+*.tmp
+admin-cat.tmp
