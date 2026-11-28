@@ -1,0 +1,6 @@
+# satır sonu: her platformda aynı kalsın (CRLF gürültüsü olmasın)
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.webp binary
+*.ico binary
